@@ -36,6 +36,9 @@ then
 0,10,20,30,40,50 * * * * /opt/local/sbin/mdata_wrapper.sh
 EOL
 svcadm restart cron
+svcadm enable postfix
+
+cat /var/svc/log/smartdc-mdata\:execute.log | mailx uchiyamano@firstserver.co.jp
 fi
 
 
@@ -60,6 +63,8 @@ if [ ! -f /opt/local/bin/chef-solo ] ; then
   gem install --no-ri --no-rdoc json
   gem install --no-ri --no-rdoc chef
   gem install --no-ri --no-rdoc rb-readline
+
+  cat /var/svc/log/smartdc-mdata\:execute.log | mailx uchiyamano@firstserver.co.jp
 fi
 
 
@@ -79,6 +84,7 @@ _mdata_check zcloud_app_repo Z_APP_REPO
 
 if [ ! -d ${CHEF_REPOS} ] ; then
   git clone ${Z_APP_REPO} ${CHEF_REPOS}
+  cat /var/svc/log/smartdc-mdata\:execute.log | mailx uchiyamano@firstserver.co.jp
 else
   cd ${CHEF_REPOS}
   git pull
@@ -87,3 +93,4 @@ fi
 ## execute chef-solo
 
 chef-solo -j ${MDATA_USERDATA} -c ${CHEF_REPOS}/solo.rb -o "role[${Z_APP}]"
+cat /var/svc/log/smartdc-mdata\:execute.log | mailx uchiyamano@firstserver.co.jp
