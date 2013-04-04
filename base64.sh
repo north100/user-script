@@ -5,6 +5,16 @@ set -x
 
 export PATH=/opt/local/bin:/opt/local/sbin:/usr/bin:/usr/sbin
 
+## Set localzone and force reboot
+if mdata-get timezone
+then
+  LZONE=`mdata-get timezone`
+else
+  LZONE=Japan
+fi
+if [ ! "$TZ" == "$LZONE" ] ; then sm-set-timezone ${LZONE} && reboot ; fi
+
+
 MDATA_WRAPPER=001
 MDATA_USERSCRIPT=/var/svc/mdata-user-script
 MDATA_USERDATA=/var/svc/mdata-user-data
