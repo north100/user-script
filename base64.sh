@@ -8,8 +8,8 @@ export PATH=/opt/local/bin:/opt/local/sbin:/usr/bin:/usr/sbin
 ## set hostname. It is no need to reboot.
 if mdata-get zcloud_hostname
 then
-  lname=`mdata-get zcloud_hostname`
-  if [ ! "`hostname`" == "$lname" ] ; then sm-set-hostname ${lname} ; fi
+  LNAME=`mdata-get zcloud_hostname`
+  if [ ! "`hostname`" == "$LNAME" ] ; then sm-set-hostname ${LNAME} ; fi
 fi
 
 ## Set localzone and force reboot
