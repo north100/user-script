@@ -5,6 +5,13 @@ set -x
 
 export PATH=/opt/local/bin:/opt/local/sbin:/usr/bin:/usr/sbin
 
+## set hostname. It is no need to reboot.
+if mdata-get zcloud_hostname
+then
+  LNAME=`mdata-get zcloud_hostname`
+  if [ ! "`hostname`" == "$LNAME" ] ; then sm-set-hostname ${LNAME} ; fi
+fi
+
 ## Set localzone and force reboot
 if mdata-get timezone
 then
@@ -13,7 +20,6 @@ else
   LZONE=Japan
 fi
 if [ ! "$TZ" == "$LZONE" ] ; then sm-set-timezone ${LZONE} && reboot ; fi
-
 
 MDATA_WRAPPER=001
 MDATA_USERSCRIPT=/var/svc/mdata-user-script
