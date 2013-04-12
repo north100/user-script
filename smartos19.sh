@@ -3,7 +3,59 @@
 set -e
 set -x
 
+## Current state of povisioning
+CURRENTSTATE=initalize
+MAILFLAG=true
+
 export PATH=/opt/local/bin:/opt/local/sbin:/usr/bin:/usr/sbin
+
+_finalize() {
+  EXITCODE=$?
+  if $MAILFLAG
+    then
+  cat << "EOL"
+current state is $CURRENTSTATE
+Last State is $EXITCODE
+Machine address = $IPADDRESS
+EOL
+  fi
+  exit 0
+}
+
+trap _finalize 0
+
+## shared functions
+_smf_enabler() {
+  if svcs "$1" | grep -q disabled  ; then svcadm enable "$1" ;fi
+  if svcs "$1" | grep -q maintenance  ; then svcadm clear "$1" ;fi
+}
+
+_get_addr_by_if() {
+  ipadm show-addr "$1" -p -o ADDR
+}
+
+_mdata_check(){
+  if ! mdata-get $1 ; then echo "ERROR_EXIT: missing metadata $1" ; exit 1 ; fi
+  export $2="`mdata-get $1`"
+}
+
+# postfix must be running.
+_smf_enabler postfix
+
+MAILTO=""
+## Set localzone and force reboot
+if mdata-get zcloud_notify_to
+then
+  MAILTO=`mdata-get zcloud_notify_to`
+else
+  MAILFLAG=false
+fi
+
+###
+### prepare section
+###
+
+IPADDRESS=`_get_addr_by_if net0/_a`
 
 ## set hostname. It is no need to reboot.
 if mdata-get zcloud_hostname
@@ -13,13 +65,17 @@ then
 fi
 
 ## Set localzone and force reboot
-if mdata-get timezone
+if mdata-get zcloud_timezone
 then
-  LZONE=`mdata-get timezone`
+  LZONE=`mdata-get zcloud_timezone`
 else
   LZONE=Japan
 fi
 if [ ! "$TZ" == "$LZONE" ] ; then sm-set-timezone ${LZONE} && reboot ; fi
+
+###
+### main section
+###
 
 MDATA_WRAPPER=001
 MDATA_USERSCRIPT=/var/svc/mdata-user-script
@@ -78,14 +134,7 @@ if [ ! -f /opt/local/bin/chef-solo ] ; then
   gem install --no-ri --no-rdoc rb-readline
 fi
 
-
-
 ## get attribute from metadata-api
-
-_mdata_check(){
-  if ! mdata-get $1 ; then echo "ERROR_EXIT: missing metadata $1" ; exit 1 ; fi
-  export $2="`mdata-get $1`"
-}
 
 _mdata_check zcloud_app Z_APP
 _mdata_check zcloud_app_repo Z_APP_REPO
@@ -103,3 +152,4 @@ fi
 ## execute chef-solo
 
 chef-solo -j ${MDATA_USERDATA} -c ${CHEF_REPOS}/solo.rb -o "role[${Z_APP}]"
+
