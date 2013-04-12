@@ -3,7 +3,19 @@
 set -e
 set -x
 
-export PATH=/opt/local/bin:/opt/local/sbin:/usr/bin:/usr/sbin
+## set specific PATH
+if [ -f /etc/product ]
+then
+  SM_VERS=`grep "^Image" /etc/product | awk '{print $3}'`
+  case "$SM_VERS" in
+    1.8.?)
+      export PATH=/opt/local/gnu/bin:/opt/local/bin:/opt/local/sbin:/usr/bin:/usr/sbin
+      ;;
+    *)
+      export PATH=/opt/local/bin:/opt/local/sbin:/usr/bin:/usr/sbin
+      ;;
+  esac
+fi
 
 ## Current state of povisioning
 CURRENTSTATE=initalize
