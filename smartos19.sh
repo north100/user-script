@@ -176,14 +176,15 @@ CURRENTSTATE=execute_chef-solo
 
 if chef-solo -j ${MDATA_USERDATA} -c ${CHEF_REPOS}/solo.rb -o "role[${Z_APP}]"
 then
+  CURRENTSTATE=running
   if [ -f $COMPLATEFILE ]
   then
     MAILFLAG=false
   else
     touch $COMPLATEFILE
   fi
+else
+  CURRENTSTATE=failure_chef-solo
 fi
-
-CURRENTSTATE=running
 
 exit 0
