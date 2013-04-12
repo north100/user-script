@@ -16,12 +16,29 @@ require
 
 - zcloud_app: アプリケーション名
 - zcloud_app_repo: アプリケーションリポジトリのGit
+- user-data: Chefのノード用Json、必要ない場合は文字列のブレス `{}`
 
 option
 
 - zcloud_hostname: hostnameに使用出来る文字
 - zcloud_timezone： `sm-list-timezones` で取得できるもの、デフォルトはJapan
 - zcloud_notify_to： カンマ区切りメールアドレス
+
+Chef−Solo
+----
+
+#### Chef-repo
+
+`Meadatta: zcloud_app_repo` にセットされたgitリポジトリをクローンし、以降Masterが継続的にフェッチされる。
+
+#### run_list
+
+`Meadatta: zcloud_app`にセットされたロール名でChef-Soloが実行される `role[${zcloud_app}]`
+
+#### override_attributes(node.json)
+
+`Meadatta: user-data`にOverride用のJsonを格納するとChef-soloが取り込んでくれる(`-j` オプション)。
+
 
 Status
 ----
