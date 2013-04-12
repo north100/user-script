@@ -15,7 +15,7 @@ touch $T_MAILBODY
 
 _finalize() {
   EXITCODE=$?
-  cat <<"EOL" >> $T_MAILBODY
+  cat <<EOL >> $T_MAILBODY
 Hi,
 
 This is zcloud application automator.
