@@ -47,7 +47,7 @@ Report
 
 - zcloud_notify_to がセットされている
 - chef-solo初回起動時のみ結果を通知
-- user-script実行時、途中でエラー狩猟した場合(初回以降は約10分おき実行)
+- user-script実行時、途中でエラー終了した場合(初回以降は約10分おき実行)
 
 Contributing
 ------------
