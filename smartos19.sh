@@ -3,22 +3,35 @@
 set -e
 set -x
 
+export PATH=/opt/local/bin:/opt/local/sbin:/usr/bin:/usr/sbin
+
 ## Current state of povisioning
 CURRENTSTATE=initalize
+COMPLATEFILE=/var/svc/zcloud_success
 MAILFLAG=true
+T_MAILBODY="/tmp/$(basename $0).$$.tmp"
+touch $T_MAILBODY
 
-export PATH=/opt/local/bin:/opt/local/sbin:/usr/bin:/usr/sbin
 
 _finalize() {
   EXITCODE=$?
-  if $MAILFLAG
-    then
-  cat << "EOL"
-current state is $CURRENTSTATE
-Last State is $EXITCODE
-Machine address = $IPADDRESS
+  cat <<"EOL" >> $T_MAILBODY
+Hi,
+
+This is zcloud application automator.
+
+My ipaddress is $IPADDRESS.
+Last state is $CURRENTSTATE and exit status is $EXITCODE.
+
 EOL
+  echo >> $T_MAILBODY
+  echo "========== tail of metadata-execute log" >> $T_MAILBODY
+  tail /var/svc/log/smartdc-mdata\:execute.log >> $T_MAILBODY
+  if $MAILFLAG
+  then
+    cat $T_MAILBODY | mailx -s "Zcloud Norify from `hostname`" $MAILTO
   fi
+  rm $T_MAILBODY
   exit 0
 }
 
@@ -55,6 +68,8 @@ fi
 ### prepare section
 ###
 
+CURRENTSTATE=setup_host
+
 IPADDRESS=`_get_addr_by_if net0/_a`
 
 ## set hostname. It is no need to reboot.
@@ -71,7 +86,7 @@ then
 else
   LZONE=Japan
 fi
-if [ ! "$TZ" == "$LZONE" ] ; then sm-set-timezone ${LZONE} && reboot ; fi
+if [ ! "$TZ" == "$LZONE" ] ; then MAILFLAG=false ; sm-set-timezone ${LZONE} && reboot ; fi
 
 ###
 ### main section
@@ -85,7 +100,9 @@ CHEF_REPOS=/usr/local/zcloud-application
 ## add mdata-wapper script to cron
 ## Notice: this block must keep on top to retry fetch cyclically.
 
+
 if ! exists /opt/local/sbin/mdata_wrapper_${MDATA_WRAPPER}.sh ; then
+  CURRENTSTATE=setup_wrapper
   cat <<"EOL" > /opt/local/sbin/mdata_wrapper_${MDATA_WRAPPER}.sh
 #!/usr/bin/bash
 export PATH=/opt/local/bin:/opt/local/sbin:/usr/bin:/usr/sbin
@@ -103,6 +120,7 @@ fi
 
 if ! grep -q -x "## ZCloud-Application" /var/spool/cron/crontabs/root
 then
+  CURRENTSTATE=setup_cronjob
   cat << "EOL" >> /var/spool/cron/crontabs/root
 ## ZCloud-Application
 0,10,20,30,40,50 * * * * /opt/local/sbin/mdata_wrapper.sh
@@ -113,12 +131,14 @@ fi
 
 # install joyent_attr_plugin
 if [ ! -f /opt/local/etc/ohai/plugins/joyent.rb ] ; then
+  CURRENTSTATE=setup_ohai_plugin
   install -d /opt/local/etc/ohai/plugins -m 0755
   curl -skf -o /opt/local/etc/ohai/plugins/joyent.rb https://raw.github.com/ZCloud-Firstserver/ohai_plugin_joyent/master/plugins/joyent.rb
 fi
 
 ## install chef-solo
 if [ ! -f /opt/local/bin/chef-solo ] ; then
+  CURRENTSTATE=setup_chef-solo
 
   pkgin -y install gcc47 scmgit-base gmake ruby193-base ruby193-yajl ruby193-nokogiri ruby193-readline pkg-config
 
@@ -143,13 +163,27 @@ _mdata_check zcloud_app_repo Z_APP_REPO
 ## clone or pull application repositoly to local
 
 if [ ! -d ${CHEF_REPOS} ] ; then
+  CURRENTSTATE=initalize_git_repository
   git clone ${Z_APP_REPO} ${CHEF_REPOS}
 else
+  CURRENTSTATE=update_git_repository
   cd ${CHEF_REPOS}
   git pull
 fi
 
 ## execute chef-solo
+CURRENTSTATE=execute_chef-solo
 
-chef-solo -j ${MDATA_USERDATA} -c ${CHEF_REPOS}/solo.rb -o "role[${Z_APP}]"
+if chef-solo -j ${MDATA_USERDATA} -c ${CHEF_REPOS}/solo.rb -o "role[${Z_APP}]"
+then
+  if [ -f $COMPLATEFILE ]
+  then
+    MAILFLAG=false
+  else
+    touch $COMPLATEFILE
+  fi
+fi
 
+CURRENTSTATE=running
+
+exit 0
