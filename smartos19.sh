@@ -41,7 +41,7 @@ EOL
   tail /var/svc/log/smartdc-mdata\:execute.log >> $T_MAILBODY
   if $MAILFLAG
   then
-    cat $T_MAILBODY | mailx -s "[$CURRENTSTATE $Z_APP] Zcloud Norify from `hostname`" $MAILTO
+    cat $T_MAILBODY | mailx -s "[$CURRENTSTATE $Z_APP] Zcloud Notification from `hostname`" $MAILTO
   fi
   rm $T_MAILBODY
   exit 0
