@@ -164,12 +164,13 @@ if [ ! -f /opt/local/bin/chef-solo ] ; then
   gem install --no-ri --no-rdoc json
   gem install --no-ri --no-rdoc chef
   gem install --no-ri --no-rdoc rb-readline
-  gem install --no-ri --no-rdoc rspec
 fi
 
 if [ ! -f /opt/local/bin/cucumber ] ;then
+  gem install --no-ri --no-rdoc rspec
   gem install --no-ri --no-rdoc cucumber
   gem install --no-ri --no-rdoc pg
+
 fi
 
 ## get attribute from metadata-api
