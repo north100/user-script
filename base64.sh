@@ -105,7 +105,6 @@ if [ ! "$TZ" == "$LZONE" ] ; then MAILFLAG=false ; sm-set-timezone ${LZONE} && r
 if [ ! -f $COMPLATEFILE ]
 then
   cat <<EOL | mailx -s "[Setup started]Zcloud Norify from `hostname`" $MAILTO
- 
 Hi,
 
 This is zcloud application automator.
@@ -186,17 +185,20 @@ fi
 
 _mdata_check zcloud_app Z_APP
 _mdata_check zcloud_app_repo Z_APP_REPO
+_mdata_check zcloud_app_ref Z_APP_REF
 
 
 ## clone or pull application repositoly to local
 
 if [ ! -d ${CHEF_REPOS} ] ; then
   CURRENTSTATE=initalize_git_repository
-  git clone ${Z_APP_REPO} ${CHEF_REPOS}
+  git clone ${Z_APP_REPO} ${CHEF_REPOS} -b ${$Z_APP_REF:=master}
 else
   CURRENTSTATE=update_git_repository
   cd ${CHEF_REPOS}
-  git pull
+  ## switch branch by Metadata
+  git checkout ${$Z_APP_REF:=master}
+  git pull origin ${$Z_APP_REF:=master}
 fi
 
 ## execute chef-solo
@@ -214,5 +216,6 @@ then
 else
   CURRENTSTATE=failure_chef-solo
 fi
+
 
 exit 0
