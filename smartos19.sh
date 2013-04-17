@@ -177,36 +177,21 @@ fi
 
 _mdata_check zcloud_app Z_APP
 _mdata_check zcloud_app_repo Z_APP_REPO
+_mdata_check zcloud_app_ref Z_APP_REF
 
 
 ## clone or pull application repositoly to local
 
 if [ ! -d ${CHEF_REPOS} ] ; then
   CURRENTSTATE=initalize_git_repository
-  git clone ${Z_APP_REPO} ${CHEF_REPOS}
+  git clone ${Z_APP_REPO} ${CHEF_REPOS} -b ${$Z_APP_REF:=master}
 else
   CURRENTSTATE=update_git_repository
   cd ${CHEF_REPOS}
-  git pull
+  ## switch branch by Metadata
+  git checkout ${$Z_APP_REF:=master}
+  git pull origin ${$Z_APP_REF:=master}
 fi
-
-
-## switch branch of application_desknets repository by Metadata
-cd ${CHEF_REPOS};
-if mdata-get zcloud_dneo_branch
-then
-  DNEO_BRANCH=`mdata-get zcloud_dneo_branch`
-  CURRENT_BRANCH=`git branch | egrep ${DNEO_BRANCH}`
-  if ${CURRENT_BRANCH}
-  then
-    git checkout origin/${DNEO_BRANCH} -b ${DNEO_BRANCH}
-  else
-    git checkout ${DNEO_BRANCH}
-  fi
-else
-  git checkout master
-fi
-
 
 ## execute chef-solo
 CURRENTSTATE=execute_chef-solo
