@@ -12,18 +12,16 @@ SmartMachineをプロビジョン時にChef-SoloのCronを仕込んで継続的�
 Metadata
 ----
 
-require
+利用可能メタデータ一覧
 
-- zcloud_app: アプリケーション名
-- zcloud_app_repo: アプリケーションリポジトリのGit
-- user-data: Chefのノード用Json、必要ない場合は文字列のブレス `{}`
-
-option
+- zcloud_app: アプリケーション名、**必須**
+- zcloud_app_repo: アプリケーションリポジトリのGit、**必須**
+- zcloud_app_ref: リモートのbranch名、省略時は`master`
+- user-data: Chefのノード用Json、必要ない場合は文字列のブレス `{}`、**必須**
 
 - zcloud_hostname: hostnameに使用出来る文字
 - zcloud_timezone： `sm-list-timezones` で取得できるもの、デフォルトはJapan
 - zcloud_notify_to： カンマ区切りメールアドレス
-- zcloud_app_repo: リモートのbranch名、省略時は`master`
 
 Chef−Solo
 ----
