@@ -191,7 +191,7 @@ else
 fi
 
 
-## switch branch of application_desknets repository
+## switch branch of application_desknets repository by Metadata
 cd ${CHEF_REPOS};
 if mdata-get zcloud_dneo_branch
 then
