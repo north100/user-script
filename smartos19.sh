@@ -197,7 +197,6 @@ if mdata-get zcloud_dneo_branch
 then
   DNEO_BRANCH=`mdata-get zcloud_dneo_branch`
   CURRENT_BRANCH=`git branch | egrep ${DNEO_BRANCH}`
-  echo "${CURRENT_BRANCH}"
   if ${CURRENT_BRANCH}
   then
     git checkout origin/${DNEO_BRANCH} -b ${DNEO_BRANCH}
