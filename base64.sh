@@ -41,7 +41,7 @@ EOL
   tail /var/svc/log/smartdc-mdata\:execute.log >> $T_MAILBODY
   if $MAILFLAG
   then
-    cat $T_MAILBODY | mailx -s "Zcloud Norify from `hostname`" $MAILTO
+    cat $T_MAILBODY | mailx -s "[$CURRENTSTATE $Z_APP] Zcloud Notification from `hostname`" $MAILTO
   fi
   rm $T_MAILBODY
   exit 0
@@ -99,6 +99,21 @@ else
   LZONE=Japan
 fi
 if [ ! "$TZ" == "$LZONE" ] ; then MAILFLAG=false ; sm-set-timezone ${LZONE} && reboot ; fi
+
+## notifies start setup if new server
+
+if [ ! -f $COMPLATEFILE ]
+then
+  cat <<EOL | mailx -s "[Setup started]Zcloud Norify from `hostname`" $MAILTO
+Hi,
+
+This is zcloud application automator.
+
+My ipaddress is $IPADDRESS.
+A new server has been provisioning. Please wait a few minutes.
+
+EOL
+fi
 
 ###
 ### main section
