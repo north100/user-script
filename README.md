@@ -23,7 +23,7 @@ option
 - zcloud_hostname: hostnameに使用出来る文字
 - zcloud_timezone： `sm-list-timezones` で取得できるもの、デフォルトはJapan
 - zcloud_notify_to： カンマ区切りメールアドレス
-- zcloud_dneo_branch: branch名(origin/なし)
+- zcloud_app_repo: リモートのbranch名、省略時は`master`
 
 Chef−Solo
 ----
