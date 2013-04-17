@@ -41,7 +41,7 @@ EOL
   tail /var/svc/log/smartdc-mdata\:execute.log >> $T_MAILBODY
   if $MAILFLAG
   then
-    cat $T_MAILBODY | mailx -s "Zcloud Norify from `hostname`" $MAILTO
+    cat $T_MAILBODY | mailx -s "[$CURRENTSTATE $Z_APP] Zcloud Notification from `hostname`" $MAILTO
   fi
   rm $T_MAILBODY
   exit 0
@@ -99,6 +99,21 @@ else
   LZONE=Japan
 fi
 if [ ! "$TZ" == "$LZONE" ] ; then MAILFLAG=false ; sm-set-timezone ${LZONE} && reboot ; fi
+
+## notifies start setup if new server
+
+if [ ! -f $COMPLATEFILE ]
+then
+  cat <<EOL | mailx -s "[Setup started]Zcloud Norify from `hostname`" $MAILTO
+Hi,
+
+This is zcloud application automator.
+
+My ipaddress is $IPADDRESS.
+A new server has been provisioning. Please wait a few minutes.
+
+EOL
+fi
 
 ###
 ### main section
@@ -166,47 +181,25 @@ if [ ! -f /opt/local/bin/chef-solo ] ; then
   gem install --no-ri --no-rdoc rb-readline
 fi
 
-## install cucumber
-if [ ! -f /opt/local/bin/cucumber ] ;then
-  gem install --no-ri --no-rdoc rspec
-  gem install --no-ri --no-rdoc cucumber
-  gem install --no-ri --no-rdoc pg
-fi
-
 ## get attribute from metadata-api
 
 _mdata_check zcloud_app Z_APP
 _mdata_check zcloud_app_repo Z_APP_REPO
+_mdata_check zcloud_app_ref Z_APP_REF
 
 
 ## clone or pull application repositoly to local
 
 if [ ! -d ${CHEF_REPOS} ] ; then
   CURRENTSTATE=initalize_git_repository
-  git clone ${Z_APP_REPO} ${CHEF_REPOS}
+  git clone ${Z_APP_REPO} ${CHEF_REPOS} -b ${$Z_APP_REF:=master}
 else
   CURRENTSTATE=update_git_repository
   cd ${CHEF_REPOS}
-  git pull
+  ## switch branch by Metadata
+  git checkout ${$Z_APP_REF:=master}
+  git pull origin ${$Z_APP_REF:=master}
 fi
-
-
-## switch branch of application_desknets repository by Metadata
-cd ${CHEF_REPOS};
-if mdata-get zcloud_dneo_branch
-then
-  DNEO_BRANCH=`mdata-get zcloud_dneo_branch`
-  CURRENT_BRANCH=`git branch | egrep ${DNEO_BRANCH}`
-  if ${CURRENT_BRANCH}
-  then
-    git checkout origin/${DNEO_BRANCH} -b ${DNEO_BRANCH}
-  else
-    git checkout ${DNEO_BRANCH}
-  fi
-else
-  git checkout master
-fi
-
 
 ## execute chef-solo
 CURRENTSTATE=execute_chef-solo
