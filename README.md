@@ -6,6 +6,7 @@ See pro tips. [Continuous convergence with the chef-solo on the joyent smartmach
 Overview
 ----
 
+
 SmartMachineをプロビジョン時にChef-SoloのCronを仕込んで継続的に実行する
 
 
@@ -64,6 +65,13 @@ Report
 - zcloud_notify_to がセットされている
 - chef-solo初回起動時のみ結果を通知
 - user-script実行時、途中でエラー終了した場合(初回以降は約10分おき実行)
+
+Aplication Examples
+----
+
+User-Scriptと連携するサンプルリポジトリを用意しました。
+
+- **Dokuwiki** : `[https://github.com/ZCloud-Firstserver/application_dokuwiki](https://github.com/ZCloud-Firstserver/application_dokuwiki)
 
 Contributing
 ------------
