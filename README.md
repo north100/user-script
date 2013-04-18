@@ -1,6 +1,8 @@
 user-script
 =====
 
+![Travis Status](https://travis-ci.org/ZCloud-Firstserver/user-script.png?branch=master)
+
 See pro tips. [Continuous convergence with the chef-solo on the joyent smartmachine and meta-data API.](https://coderwall.com/p/9gk3ag)
 
 Overview
