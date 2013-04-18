@@ -1,1 +1,1 @@
-script:  "bash -n *.sh && echo Syntax OK"
+script: "env"
