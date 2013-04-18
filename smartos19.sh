@@ -190,6 +190,16 @@ else
     Z_APP_REF=master
 fi
 
+## exit once
+if [ -f $COMPLATEFILE ]
+then
+  if mdata-get zcloud_app_once
+  then
+    CURRENTSTATE=running
+    exit 0
+  fi
+fi
+
 
 ## clone or pull application repositoly to local
 
@@ -200,7 +210,7 @@ else
   CURRENTSTATE=update_git_repository
   cd ${CHEF_REPOS}
   ## switch branch by Metadata
-  git fetch --all
+  git fetch --all --prune
   git checkout ${Z_APP_REF}
   git pull origin ${Z_APP_REF}
 fi

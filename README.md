@@ -9,7 +9,7 @@ Overview
 ----
 
 
-SmartMachineをプロビジョン時にChef-SoloのCronを仕込んで継続的に実行する
+SmartMachineをプロビジョン時にChef-SoloのCronを仕込んで継続的に実行する、一回限りのオプションにも対応。
 
 
 Metadata
@@ -20,6 +20,7 @@ Metadata
 - zcloud_app: アプリケーション名、**必須**
 - zcloud_app_repo: アプリケーションリポジトリのGit、**必須**
 - zcloud_app_ref: リモートのbranch名、省略時は`master`
+- zcloud_app_once: 初回のみChefSoloを実行、2度目以降は何もしない。キーがあれば値はなんでも良い。
 - user-data: Chefのノード用Json、必要ない場合は文字列のブレス `{}`、**必須**
 
 - zcloud_hostname: hostnameに使用出来る文字
