@@ -185,20 +185,24 @@ fi
 
 _mdata_check zcloud_app Z_APP
 _mdata_check zcloud_app_repo Z_APP_REPO
-_mdata_check zcloud_app_ref Z_APP_REF
+if mdata-get zcloud_app_ref ; then _mdata_check zcloud_app_ref Z_APP_REF
+else
+    Z_APP_REF=master
+fi
 
 
 ## clone or pull application repositoly to local
 
 if [ ! -d ${CHEF_REPOS} ] ; then
   CURRENTSTATE=initalize_git_repository
-  git clone ${Z_APP_REPO} ${CHEF_REPOS} -b ${$Z_APP_REF:=master}
+  git clone ${Z_APP_REPO} ${CHEF_REPOS} -b ${Z_APP_REF}
 else
   CURRENTSTATE=update_git_repository
   cd ${CHEF_REPOS}
   ## switch branch by Metadata
-  git checkout ${$Z_APP_REF:=master}
-  git pull origin ${$Z_APP_REF:=master}
+  git fetch --all
+  git checkout ${Z_APP_REF}
+  git pull origin ${Z_APP_REF}
 fi
 
 ## execute chef-solo

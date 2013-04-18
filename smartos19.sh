@@ -200,6 +200,7 @@ else
   CURRENTSTATE=update_git_repository
   cd ${CHEF_REPOS}
   ## switch branch by Metadata
+  git fetch --all
   git checkout ${Z_APP_REF}
   git pull origin ${Z_APP_REF}
 fi
