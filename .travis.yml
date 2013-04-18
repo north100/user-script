@@ -1,1 +1,1 @@
-script: "env"
+script: "./test/travis.sh"
