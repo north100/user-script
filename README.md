@@ -6,6 +6,7 @@ See pro tips. [Continuous convergence with the chef-solo on the joyent smartmach
 Overview
 ----
 
+
 SmartMachineをプロビジョン時にChef-SoloのCronを仕込んで継続的に実行する
 
 
