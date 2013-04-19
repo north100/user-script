@@ -89,6 +89,10 @@ if mdata-get zcloud_hostname
 then
   LNAME=`mdata-get zcloud_hostname`
   if [ ! "`hostname`" == "$LNAME" ] ; then sm-set-hostname ${LNAME} ; fi
+else
+  ZONENAME=`zonename`
+  LNAME=${IPADDRESS//./-}.${ZONENAME:0:8}.local
+  if [ ! "`hostname`" == "$LNAME" ] ; then sm-set-hostname ${LNAME} ; fi
 fi
 
 ## Set localzone and force reboot
