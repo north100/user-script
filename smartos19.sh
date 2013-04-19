@@ -102,7 +102,7 @@ if [ ! "$TZ" == "$LZONE" ] ; then MAILFLAG=false ; sm-set-timezone ${LZONE} && r
 
 ## notifies start setup if new server
 
-if [ ! -f $COMPLATEFILE ]
+if [ ! -f $COMPLATEFILE -a -z $MAILTO ]
 then
   cat <<EOL | mailx -s "[Setup started]Zcloud Norify from `hostname`" $MAILTO
 Hi,
@@ -128,7 +128,7 @@ CHEF_REPOS=/usr/local/zcloud-application
 ## Notice: this block must keep on top to retry fetch cyclically.
 
 
-if ! exists /opt/local/sbin/mdata_wrapper_${MDATA_WRAPPER}.sh ; then
+if [ ! -f /opt/local/sbin/mdata_wrapper_${MDATA_WRAPPER}.sh ] ; then
   CURRENTSTATE=setup_wrapper
   cat <<"EOL" > /opt/local/sbin/mdata_wrapper_${MDATA_WRAPPER}.sh
 #!/usr/bin/bash
