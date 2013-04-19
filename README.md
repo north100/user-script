@@ -23,7 +23,7 @@ Metadata
 - zcloud_app_once: 初回のみChefSoloを実行、2度目以降は何もしない。キーがあれば値はなんでも良い。
 - user-data: Chefのノード用Json、必要ない場合は文字列のブレス `{}`、**必須**
 
-- zcloud_hostname: hostnameに使用出来る文字
+- zcloud_hostname: hostnameに使用出来る文字、省略時はIPアドレス＋zonename
 - zcloud_timezone： `sm-list-timezones` で取得できるもの、デフォルトはJapan
 - zcloud_notify_to： カンマ区切りメールアドレス
 
