@@ -104,21 +104,6 @@ else
 fi
 if [ ! "$TZ" == "$LZONE" ] ; then MAILFLAG=false ; sm-set-timezone ${LZONE} && reboot ; fi
 
-## notifies start setup if new server
-
-if [ ! -f $COMPLATEFILE -a -z $MAILTO ]
-then
-  cat <<EOL | mailx -s "[Setup started]Zcloud Norify from `hostname`" $MAILTO
-Hi,
-
-This is zcloud application automator.
-
-My ipaddress is $IPADDRESS.
-A new server has been provisioning. Please wait a few minutes.
-
-EOL
-fi
-
 ###
 ### main section
 ###
@@ -159,6 +144,20 @@ EOL
 svcadm restart cron
 fi
 
+## notifies start setup if new server
+
+if [ ! -f $COMPLATEFILE -a -z $MAILTO ]
+then
+  cat <<EOL | mailx -s "[Setup started]Zcloud Norify from `hostname`" $MAILTO
+Hi,
+
+This is zcloud application automator.
+
+My ipaddress is $IPADDRESS.
+A new server has been provisioning. Please wait a few minutes.
+
+EOL
+fi
 
 # install joyent_attr_plugin
 if [ ! -f /opt/local/etc/ohai/plugins/joyent.rb ] ; then
