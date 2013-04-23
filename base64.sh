@@ -64,6 +64,12 @@ _mdata_check(){
   export $2="`mdata-get $1`"
 }
 
+_splitip() {
+  local IFS="/"
+  set -- $1
+  echo $1
+}
+
 # postfix must be running.
 _smf_enabler postfix
 
@@ -91,7 +97,7 @@ then
   if [ ! "`hostname`" == "$LNAME" ] ; then sm-set-hostname ${LNAME} ; fi
 else
   ZONENAME=`zonename`
-  LNAME=${IPADDRESS//./-}.${ZONENAME:0:8}.local
+  LNAME=`_splitip ${IPADDRESS//./-}`.${ZONENAME:0:8}.local
   if [ ! "`hostname`" == "$LNAME" ] ; then sm-set-hostname ${LNAME} ; fi
 fi
 
