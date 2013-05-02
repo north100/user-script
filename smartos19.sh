@@ -1,4 +1,6 @@
 #!/usr/bin/bash
+## version: v2.0
+## support: https://github.com/ZCloud-Firstserver/user-script
 
 set -e
 set -x
